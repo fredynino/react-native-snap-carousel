@@ -67,7 +67,8 @@ export default class Carousel extends Component {
         useScrollView: PropTypes.bool,
         vertical: PropTypes.bool,
         onBeforeSnapToItem: PropTypes.func,
-        onSnapToItem: PropTypes.func
+        onSnapToItem: PropTypes.func,
+        onCustomSnapToItem: PropTypes.func
     };
 
     static defaultProps = {
@@ -951,8 +952,8 @@ export default class Carousel extends Component {
         }
     }
 
-    _snapToItem (index, animated = true, fireCallback = true, initial = false, lockScroll = true) {
-        const { enableMomentum, onSnapToItem, onBeforeSnapToItem } = this.props;
+    _snapToItem (index, animated = true, fireCallback = false, initial = false, lockScroll = true) {
+        const { enableMomentum, onSnapToItem, onBeforeSnapToItem, onCustomSnapToItem } = this.props;
         const itemsLength = this._getCustomDataLength();
         const wrappedRef = this._getWrappedRef();
 
@@ -968,6 +969,7 @@ export default class Carousel extends Component {
 
         if (index !== this._previousActiveItem) {
             this._previousActiveItem = index;
+            onCustomSnapToItem && onCustomSnapToItem(this._getDataIndex(index))
 
             // Placed here to allow overscrolling for edges items
             if (lockScroll && this._canLockScroll()) {
@@ -1063,7 +1065,7 @@ export default class Carousel extends Component {
         clearInterval(this._autoplayInterval);
     }
 
-    snapToItem (index, animated = true, fireCallback = true) {
+    snapToItem (index, animated = true, fireCallback = false) {
         if (!index || index < 0) {
             index = 0;
         }
@@ -1077,7 +1079,7 @@ export default class Carousel extends Component {
         this._snapToItem(positionIndex, animated, fireCallback);
     }
 
-    snapToNext (animated = true, fireCallback = true) {
+    snapToNext (animated = true, fireCallback = false) {
         const itemsLength = this._getCustomDataLength();
 
         let newIndex = this._activeItem + 1;
@@ -1090,7 +1092,7 @@ export default class Carousel extends Component {
         this._snapToItem(newIndex, animated, fireCallback);
     }
 
-    snapToPrev (animated = true, fireCallback = true) {
+    snapToPrev (animated = true, fireCallback = false) {
         const itemsLength = this._getCustomDataLength();
 
         let newIndex = this._activeItem - 1;
